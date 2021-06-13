@@ -110,13 +110,18 @@
             })
 
 
-            function resloveCancelRequest() {
             const inputStream = rxjs.fromEvent(input, 'input')
-            const requestStream = inputStream.pipe(rxjs.operators.switchMap(x => getApiResponse(x.target.value)))
-            requestStream.subscribe(res => cancelPrevContainer.innerHTML = res)
+            function resolveRaceCondition() {
+                const requestStream = inputStream.pipe(rxjs.operators.switchMap(x => getApiResponse(x.target.value)))
+                requestStream.subscribe(res => response.innerHTML = res)
 
             }
-            resloveCancelRequest()
+            function resolveCancelRequest() {
+                const requestStream = inputStream.pipe(rxjs.operators.concatMap(curr => getApiResponse(curr.target.value)))
+                requestStream.subscribe(x =>cancelPrevContainer.innerHTML = x)
+            }
+            resolveRaceCondition()
+            resolveCancelRequest()
         </script>
     </body>
 </html>
